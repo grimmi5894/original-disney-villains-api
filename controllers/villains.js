@@ -1,4 +1,6 @@
-const getAllVillains = () => {}
+const getAllVillains = (request, response) => {
+  
+}
 
 module.exports = {
   getAllVillains
