@@ -9,11 +9,24 @@ chai.use(sinonChai)
 const { expect } = chai
 
 describe('Controllers-Villains', () => {
+  let response
   let sandbox 
+  let stubbedSend
+  let stubbedSendStatus
+  let stubbedFindAll
 
-  before() => {
+  before(() => {
     sandbox = createSandbox()
-  }
+
+    stubbedSend = sandbox.stub()
+    stubbedSendStatus = sandbox.stub()
+    stubbedFindAll = sandbox.stub(models.villains, 'findAll')
+
+    response = {
+      send: stubbedSend,
+      sendStatus: stubbedSendStatus
+    }
+  })
 
   afterEach(() => {
     sandbox.reset()
@@ -23,7 +36,11 @@ describe('Controllers-Villains', () => {
     sandbox.restore()
   })
 
-  describe('getAllVillains', () => {})
+  describe('getAllVillains', () => {
+    it('gets a list of all villains from database and sends the JSON using response.send()', async () => {
+      await getAllVillains({}, response)
+    })
+  })
 
   describe('getVillainBySlug', () => {})
 
