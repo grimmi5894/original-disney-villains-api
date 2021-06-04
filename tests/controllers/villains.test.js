@@ -30,7 +30,7 @@ describe('Controllers-Villains', () => {
 
     response = {
       send: stubbedSend,
-      sendStatus: stubbedSendStatus
+      sendStatus: stubbedSendStatus,
       status: stubbedStatus
     }
   })
