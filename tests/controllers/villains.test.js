@@ -1,4 +1,4 @@
-const { after, afterEach, before, describe, it } = require('mocha')
+const { after, afterEach, before, beforeEach, describe, it } = require('mocha')
 const chai = require('chai')
 const { createSandbox } = require('sinon')
 const sinonChai = require('sinon-chai')
@@ -16,6 +16,8 @@ describe('Controllers-Villains', () => {
   let stubbedSend
   let stubbedSendStatus
   let stubbedFindAll
+  let stubbedStatus
+  let stubbedStatusDotSend
 
   before(() => {
     sandbox = createSandbox()
@@ -23,11 +25,18 @@ describe('Controllers-Villains', () => {
     stubbedSend = sandbox.stub()
     stubbedSendStatus = sandbox.stub()
     stubbedFindAll = sandbox.stub(models.villains, 'findAll')
+    stubbedStatus = sandbox.stub()
+    stubbedStatusDotSend = sandbox.stub()
 
     response = {
       send: stubbedSend,
       sendStatus: stubbedSendStatus
+      status: stubbedStatus
     }
+  })
+
+  beforeEach(() => {
+    stubbedStatus.returns({ send: stubbedStatusDotSend })
   })
 
   afterEach(() => {
@@ -46,6 +55,16 @@ describe('Controllers-Villains', () => {
 
       expect(stubbedFindAll).to.have.callCount(1)
       expect(stubbedSend).to.have.been.calledWith(mockVillainList)
+    })
+
+    it('responds with a 500 status and error message when database call throws error', async () => {
+      stubbedFindAll.throws('ERROR!')
+
+      await getAllVillains({}, response)
+
+      expect(stubbedFindAll).to.have.callCount(1)
+      expect(stubbedStatus).to.have.been.calledWith(500)
+      expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to retrieve villains, please try again')
     })
   })
 
