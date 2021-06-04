@@ -5,7 +5,7 @@ const sinonChai = require('sinon-chai')
 const models = require('../../models')
 const { mockVillainList, mockVillain, mockPostVillainData, mockPostVillainResponse } = require('../mocks/villains')
 const { getAllVillains, getVillainBySlug, saveNewVillain } = require('../../controllers/villains')
-const { response } = require('express')
+const { response, request } = require('express')
 
 chai.use(sinonChai)
 const { expect } = chai
@@ -16,6 +16,7 @@ describe('Controllers-Villains', () => {
   let stubbedSend
   let stubbedSendStatus
   let stubbedFindAll
+  let stubbedFindOne
   let stubbedStatus
   let stubbedStatusDotSend
 
@@ -25,6 +26,7 @@ describe('Controllers-Villains', () => {
     stubbedSend = sandbox.stub()
     stubbedSendStatus = sandbox.stub()
     stubbedFindAll = sandbox.stub(models.villains, 'findAll')
+    stubbedFindOne = sandbox.stub(models.villains, 'findOne')
     stubbedStatus = sandbox.stub()
     stubbedStatusDotSend = sandbox.stub()
 
@@ -68,7 +70,21 @@ describe('Controllers-Villains', () => {
     })
   })
 
-  describe('getVillainBySlug', () => {})
+  describe('getVillainBySlug', () => {
+    it('retrieves villain associated with slug sent from database and sends JSON using response.send()', async () => {
+      stubbedFindOne.returns(mockVillain)
+      const request = { params: { slug: 'hades' } }
+
+      await getVillainBySlug(request, response)
+
+      expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'hades' } })
+      expect(stubbedSend).to.have.been.calledWith(mockVillain)
+    })
+
+    it('responds with 404 status when no matching villain is found', async () => {})
+
+    it('responds with a 500 status and error message when database call throws error', async () => {})
+  })
 
   describe('saveNewVillain', () => {})
 
