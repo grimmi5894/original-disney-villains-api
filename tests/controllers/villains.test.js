@@ -19,6 +19,7 @@ describe('Controllers-Villains', () => {
   let stubbedFindOne
   let stubbedStatus
   let stubbedStatusDotSend
+  let stubbedCreate
 
   before(() => {
     sandbox = createSandbox()
@@ -29,6 +30,7 @@ describe('Controllers-Villains', () => {
     stubbedFindOne = sandbox.stub(models.villains, 'findOne')
     stubbedStatus = sandbox.stub()
     stubbedStatusDotSend = sandbox.stub()
+    stubbedCreate = sandbox.stub(models.villains, 'create')
 
     response = {
       send: stubbedSend,
@@ -104,4 +106,16 @@ describe('Controllers-Villains', () => {
   })
 })
 
-describe('saveNewVillain', () => {})
+describe('saveNewVillain', () => {
+  it('creates new villain database record from data provided and responds with 200 status and new record', async () => {
+    stubbedCreate.returns(mockPostVillainResponse)
+
+    const request = { body: mockPostVillainData }
+
+    await saveNewVillain(request, response)
+
+    expect(stubbedCreate).to.have.been.calledWith(mockPostVillainData)
+    expect(stubbedStatus).to.have.been.calledWith(201)
+    expect(stubbedStatusDotSend).to.have.been.calledWith(mockPostVillainResponse)
+  })
+})
