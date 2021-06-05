@@ -1,10 +1,13 @@
-const { after, afterEach, before, beforeEach, describe, it } = require('mocha')
+const {
+  after, afterEach, before, beforeEach, describe, it
+} = require('mocha')
 const chai = require('chai')
 const { createSandbox } = require('sinon')
 const sinonChai = require('sinon-chai')
 const models = require('../../models')
 const { mockVillainList, mockVillain, mockPostVillainData, mockPostVillainResponse } = require('../mocks/villains')
 const { getAllVillains, getVillainBySlug, saveNewVillain } = require('../../controllers/villains')
+// eslint-disable-next-line no-unused-vars
 const { response, request } = require('express')
 
 chai.use(sinonChai)
@@ -13,24 +16,24 @@ const { expect } = chai
 describe('Controllers-Villains', () => {
   let response
   let sandbox
+  let stubbedCreate
   let stubbedSend
   let stubbedSendStatus
   let stubbedFindAll
   let stubbedFindOne
   let stubbedStatus
   let stubbedStatusDotSend
-  let stubbedCreate
 
   before(() => {
     sandbox = createSandbox()
 
+    stubbedCreate = sandbox.stub(models.villains, 'create')
     stubbedSend = sandbox.stub()
     stubbedSendStatus = sandbox.stub()
     stubbedFindAll = sandbox.stub(models.villains, 'findAll')
     stubbedFindOne = sandbox.stub(models.villains, 'findOne')
     stubbedStatus = sandbox.stub()
     stubbedStatusDotSend = sandbox.stub()
-    stubbedCreate = sandbox.stub(models.villains, 'create')
 
     response = {
       send: stubbedSend,
@@ -104,18 +107,18 @@ describe('Controllers-Villains', () => {
       expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to retrieve villain, please try again')
     })
   })
-})
 
-describe('saveNewVillain', () => {
-  it('creates new villain database record from data provided and responds with 200 status and new record', async () => {
-    stubbedCreate.returns(mockPostVillainResponse)
 
-    const request = { body: mockPostVillainData }
+  describe('saveNewVillain', () => {
+    it('creates new villain database record from data provided and returns 200 status and new record', async () => {
+      stubbedCreate.returns(mockPostVillainResponse)
+      const request = { body: mockPostVillainData }
 
-    await saveNewVillain(request, response)
+      await saveNewVillain(request, response)
 
-    expect(stubbedCreate).to.have.been.calledWith(mockPostVillainData)
-    expect(stubbedStatus).to.have.been.calledWith(201)
-    expect(stubbedStatusDotSend).to.have.been.calledWith(mockPostVillainResponse)
+      expect(stubbedCreate).to.have.been.calledWith(mockPostVillainData)
+      expect(stubbedStatus).to.have.been.calledWith(201)
+      expect(stubbedStatusDotSend).to.have.been.calledWith(mockPostVillainResponse)
+    })
   })
 })
