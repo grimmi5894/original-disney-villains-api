@@ -91,9 +91,17 @@ describe('Controllers-Villains', () => {
       expect(stubbedSendStatus).to.have.been.calledWith(404)
     })
 
-    it('responds with a 500 status and error message when database call throws error', async () => {})
+    it('responds with a 500 status and error message when database call throws error', async () => {
+      stubbedFindOne.throws('ERROR!')
+      const request = { params: { slug: 'error' } }
+
+      await getVillainBySlug(request, response)
+
+      expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'error' } })
+      expect(stubbedStatus).to.have.been.calledWith(500)
+      expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to retrieve villain, please try again')
+    })
   })
-
-  describe('saveNewVillain', () => {})
-
 })
+
+describe('saveNewVillain', () => {})
